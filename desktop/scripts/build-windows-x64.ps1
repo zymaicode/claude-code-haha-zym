@@ -1,5 +1,6 @@
 [CmdletBinding()]
 param(
+  [switch]$SkipInstall,
   [Parameter(ValueFromRemainingArguments = $true)]
   [string[]]$TauriArgs
 )
@@ -164,7 +165,7 @@ try {
 
 # bunx is not a separate binary on Windows; Tauri is invoked via bun x
 
-if ($env:SKIP_INSTALL -ne '1') {
+if (-not $SkipInstall -and $env:SKIP_INSTALL -ne '1') {
   Write-Step 'Installing root dependencies...'
   Push-Location $repoRoot
   try {
