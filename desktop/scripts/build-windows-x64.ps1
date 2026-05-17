@@ -151,10 +151,17 @@ Assert-WindowsHost
 Assert-Command bun
 
 Ensure-RustInPath
-Import-VsDevEnvironment
 
 Assert-Command cargo
 Assert-Command rustc
+
+# Try importing VS environment; skip if PATH is too long (known Windows issue)
+try {
+  Import-VsDevEnvironment
+} catch {
+  Write-Step "WARNING: Could not import VS environment. If rustc can compile native code, this is fine."
+}
+
 # bunx is not a separate binary on Windows; Tauri is invoked via bun x
 
 if ($env:SKIP_INSTALL -ne '1') {
