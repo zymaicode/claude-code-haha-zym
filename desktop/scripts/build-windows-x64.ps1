@@ -113,10 +113,10 @@ function Get-StagedArtifactName {
 
   switch -Regex ($ArtifactName) {
     '^latest\.json$' { return 'latest.json' }
-    '\.msi\.zip\.sig$' { return "Claude-Code-Haha_${appVersion}_windows_x64_msi.msi.zip.sig" }
-    '\.msi\.zip$' { return "Claude-Code-Haha_${appVersion}_windows_x64_msi.msi.zip" }
-    '\.msi\.sig$' { return "Claude-Code-Haha_${appVersion}_windows_x64_msi.msi.sig" }
-    '\.msi$' { return "Claude-Code-Haha_${appVersion}_windows_x64_msi.msi" }
+    '\.msi\.zip\.sig$' { return "Claude-Code-Haha-ZYM_${appVersion}_windows_x64_msi.msi.zip.sig" }
+    '\.msi\.zip$' { return "Claude-Code-Haha-ZYM_${appVersion}_windows_x64_msi.msi.zip" }
+    '\.msi\.sig$' { return "Claude-Code-Haha-ZYM_${appVersion}_windows_x64_msi.msi.sig" }
+    '\.msi$' { return "Claude-Code-Haha-ZYM_${appVersion}_windows_x64_msi.msi" }
     default { return $ArtifactName }
   }
 }
@@ -149,7 +149,7 @@ Import-VsDevEnvironment
 
 Assert-Command cargo
 Assert-Command rustc
-Assert-Command bunx
+# bunx is not a separate binary on Windows; Tauri is invoked via bun x
 
 if ($env:SKIP_INSTALL -ne '1') {
   Write-Step 'Installing root dependencies...'
@@ -224,7 +224,7 @@ Write-Step "Building Windows desktop app for $targetTriple"
 Push-Location $desktopDir
 try {
   $env:TAURI_ENV_TARGET_TRIPLE = $targetTriple
-  & bunx @tauriBuildArgs
+  & bun x @tauriBuildArgs
   if ($LASTEXITCODE -ne 0) {
     throw "[build-windows-x64] tauri build failed (exit $LASTEXITCODE)"
   }
