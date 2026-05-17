@@ -6,6 +6,7 @@ import { useTranslation } from '../i18n'
 import { useUIStore } from '../stores/uiStore'
 import { useMcpStore } from '../stores/mcpStore'
 import { useSessionStore } from '../stores/sessionStore'
+import { ExtensionMarketplaceModal } from '../components/shared/ExtensionMarketplaceModal'
 import type { McpServerRecord, McpUpsertPayload } from '../types/mcp'
 
 type EditorMode =
@@ -408,6 +409,7 @@ export function McpSettings() {
   const [isDeleting, setIsDeleting] = useState(false)
   const [busyServerName, setBusyServerName] = useState<string | null>(null)
   const [pendingDeleteServer, setPendingDeleteServer] = useState<McpServerRecord | null>(null)
+  const [marketplaceOpen, setMarketplaceOpen] = useState(false)
   const refreshInFlightRef = useRef(new Set<string>())
 
   const activeSession = sessions.find((session) => session.id === activeSessionId)
@@ -944,10 +946,16 @@ export function McpSettings() {
             {t('settings.mcp.description')}
           </p>
         </div>
-        <Button variant="secondary" size="lg" onClick={beginCreate}>
-          <span className="material-symbols-outlined text-[18px]">add</span>
-          {t('settings.mcp.addServer')}
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button variant="secondary" size="lg" onClick={beginCreate}>
+            <span className="material-symbols-outlined text-[18px]">add</span>
+            {t('settings.mcp.addServer')}
+          </Button>
+          <Button variant="secondary" size="lg" onClick={() => setMarketplaceOpen(true)}>
+            <span className="material-symbols-outlined text-[18px]">store</span>
+            Browse Marketplace
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3 mb-8">
@@ -1010,6 +1018,12 @@ export function McpSettings() {
         </div>
       )}
       {deleteModal}
+      <ExtensionMarketplaceModal
+        open={marketplaceOpen}
+        onClose={() => setMarketplaceOpen(false)}
+        category="mcp"
+        scope={currentWorkDir ? 'project' : 'user'}
+      />
     </div>
   )
 }

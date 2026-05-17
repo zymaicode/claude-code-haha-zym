@@ -5,6 +5,7 @@ import { useSettingsStore, UI_ZOOM_DEFAULT, UI_ZOOM_MIN, UI_ZOOM_MAX, UI_ZOOM_ST
 import { useProviderStore } from '../stores/providerStore'
 import { useTranslation } from '../i18n'
 import { Modal } from '../components/shared/Modal'
+import { ExtensionMarketplaceModal } from '../components/shared/ExtensionMarketplaceModal'
 import { ConfirmDialog } from '../components/shared/ConfirmDialog'
 import { Input } from '../components/shared/Input'
 import { Button } from '../components/shared/Button'
@@ -30,7 +31,6 @@ import { TerminalSettings } from './TerminalSettings'
 import { DiagnosticsSettings } from './DiagnosticsSettings'
 import { ActivitySettings } from './ActivitySettings'
 import { MemorySettings } from './MemorySettings'
-import { ExtensionStore } from './ExtensionStore'
 import { useUIStore, type SettingsTab } from '../stores/uiStore'
 import { ClaudeOfficialLogin } from '../components/settings/ClaudeOfficialLogin'
 import { useUpdateStore } from '../stores/updateStore'
@@ -98,7 +98,6 @@ export function Settings() {
             <TabButton icon="extension" label={t('settings.tab.plugins')} active={activeTab === 'plugins'} onClick={() => setActiveTab('plugins')} />
             <TabButton icon="mouse" label={t('settings.tab.computerUse')} active={activeTab === 'computerUse'} onClick={() => setActiveTab('computerUse')} />
             <TabButton icon="monitoring" label={t('settings.tab.activity')} active={activeTab === 'activity'} onClick={() => setActiveTab('activity')} />
-            <TabButton icon="store" label={t('settings.tab.extensions') || 'Extensions'} active={activeTab === 'extensions'} onClick={() => setActiveTab('extensions')} />
             <TabButton icon="monitor_heart" label={t('settings.tab.diagnostics')} active={activeTab === 'diagnostics'} onClick={() => setActiveTab('diagnostics')} />
           </div>
           <div className="border-t border-[var(--color-border)]/40 pt-1">
@@ -121,7 +120,6 @@ export function Settings() {
           {activeTab === 'memory' && <MemorySettings />}
           {activeTab === 'plugins' && <PluginSettings />}
           {activeTab === 'computerUse' && <ComputerUseSettings />}
-          {activeTab === 'extensions' && <ExtensionStore />}
           {activeTab === 'diagnostics' && <DiagnosticsSettings />}
           {activeTab === 'about' && <AboutSettings />}
         </div>
@@ -2862,6 +2860,7 @@ function DetailStat({
 function SkillSettings() {
   const selectedSkill = useSkillStore((s) => s.selectedSkill)
   const t = useTranslation()
+  const [marketplaceOpen, setMarketplaceOpen] = useState(false)
 
   if (selectedSkill) {
     return (
@@ -2873,13 +2872,26 @@ function SkillSettings() {
 
   return (
     <div className="w-full min-w-0">
-      <h2 className="text-base font-semibold text-[var(--color-text-primary)] mb-1">
-        {t('settings.skills.title')}
-      </h2>
-      <p className="text-sm text-[var(--color-text-tertiary)] mb-4">
-        {t('settings.skills.description')}
-      </p>
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h2 className="text-base font-semibold text-[var(--color-text-primary)] mb-1">
+            {t('settings.skills.title')}
+          </h2>
+          <p className="text-sm text-[var(--color-text-tertiary)]">
+            {t('settings.skills.description')}
+          </p>
+        </div>
+        <Button variant="secondary" size="sm" onClick={() => setMarketplaceOpen(true)}>
+          <span className="material-symbols-outlined text-[16px]">store</span>
+          <span className="ml-1.5">Browse Marketplace</span>
+        </Button>
+      </div>
       <SkillList />
+      <ExtensionMarketplaceModal
+        open={marketplaceOpen}
+        onClose={() => setMarketplaceOpen(false)}
+        category="skill"
+      />
     </div>
   )
 }
