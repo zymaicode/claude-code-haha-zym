@@ -9,8 +9,8 @@ REPO_ROOT="$(cd "${DESKTOP_DIR}/.." && pwd)"
 TARGET_TRIPLE="aarch64-apple-darwin"
 TAURI_TARGET_DIR="${DESKTOP_DIR}/src-tauri/target"
 CANONICAL_OUTPUT_DIR="${DESKTOP_DIR}/build-artifacts/macos-arm64"
-APP_BUNDLE_NAME="Claude Code Haha.app"
-APP_BUNDLE_ID="com.claude-code-haha.desktop"
+APP_BUNDLE_NAME="Claude Code Haha ZYM.app"
+APP_BUNDLE_ID="com.claude-code-haha-zym.desktop"
 
 usage() {
   cat <<'EOF'
@@ -191,7 +191,7 @@ build_canonical_dmg() {
 
   # Create a read-write DMG first so we can customize the Finder layout
   hdiutil create \
-    -volname "Claude Code Haha" \
+    -volname "Claude Code Haha ZYM" \
     -srcfolder "${staging_dir}" \
     -ov \
     -format UDRW \
@@ -212,7 +212,7 @@ build_canonical_dmg() {
   # 所以这里允许 osascript 非零退出,只 warn,不让 set -e 炸掉整个脚本。
   if ! osascript <<APPLESCRIPT
 tell application "Finder"
-  tell disk "Claude Code Haha"
+  tell disk "Claude Code Haha ZYM"
     open
     set current view of container window to icon view
     set toolbar visible of container window to false
