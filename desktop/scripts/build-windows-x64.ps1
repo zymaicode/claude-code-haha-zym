@@ -189,15 +189,10 @@ if ($env:SKIP_INSTALL -ne '1') {
   }
 }
 
-$tauriBuildArgs = @(
-  'tauri',
-  'build',
-  '--target',
-  $targetTriple,
-  '--bundles',
-  'msi',
-  '--ci'
-)
+$extraArgs = @()
+if ($null -ne $TauriArgs -and $TauriArgs.Count -gt 0) {
+  $extraArgs = $TauriArgs
+}
 
 $tempConfigPath = $null
 if (-not $env:TAURI_SIGNING_PRIVATE_KEY) {
@@ -209,14 +204,6 @@ if (-not $env:TAURI_SIGNING_PRIVATE_KEY) {
   } | ConvertTo-Json -Depth 10
   Set-Content -Path $tempConfigPath -Value $tempConfig -Encoding UTF8
   Write-Step 'TAURI_SIGNING_PRIVATE_KEY not set, disabling updater artifacts for local build'
-  $tauriBuildArgs += @('--config', $tempConfigPath)
-}
-
-if ($null -ne $TauriArgs) {
-  $remainingArgs = @($TauriArgs)
-  if ($remainingArgs.Count -gt 0) {
-    $tauriBuildArgs += $remainingArgs
-  }
 }
 
 Write-Step "Building Windows desktop app for $targetTriple"
@@ -224,7 +211,16 @@ Write-Step "Building Windows desktop app for $targetTriple"
 Push-Location $desktopDir
 try {
   $env:TAURI_ENV_TARGET_TRIPLE = $targetTriple
-  & bun x @tauriBuildArgs
+
+  $tauriArgs = @('run', 'tauri', 'build', '--target', $targetTriple, '--bundles', 'msi', '--ci')
+  if ($tempConfigPath) {
+    $tauriArgs += @('--config', $tempConfigPath)
+  }
+  if ($extraArgs.Count -gt 0) {
+    $tauriArgs += $extraArgs
+  }
+
+  & bun @tauriArgs
   if ($LASTEXITCODE -ne 0) {
     throw "[build-windows-x64] tauri build failed (exit $LASTEXITCODE)"
   }
