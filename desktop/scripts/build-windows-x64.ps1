@@ -60,15 +60,21 @@ function Import-VsDevEnvironment {
   Write-Step "Importing MSVC environment from $vsDevCmd"
 
   $env:VSCMD_SKIP_SENDTELEMETRY = '1'
-  $envDump = & cmd.exe /d /s /c "`"$vsDevCmd`" -arch=x64 -host_arch=x64 >nul && set"
-  if ($LASTEXITCODE -ne 0) {
-    throw "[build-windows-x64] Failed to initialize Visual Studio build environment (exit $LASTEXITCODE)"
-  }
-
-  foreach ($line in $envDump) {
-    if ($line -match '^(.*?)=(.*)$') {
-      [Environment]::SetEnvironmentVariable($matches[1], $matches[2], 'Process')
+  $tempEnvFile = Join-Path ([System.IO.Path]::GetTempPath()) "vs-env-$([System.IO.Path]::GetRandomFileName()).txt"
+  try {
+    $cmd = "`"$vsDevCmd`" -arch=x64 -host_arch=x64 >nul && set > `"$tempEnvFile`""
+    & cmd.exe /d /s /c $cmd
+    if ($LASTEXITCODE -ne 0) {
+      throw "[build-windows-x64] Failed to initialize Visual Studio build environment (exit $LASTEXITCODE)"
     }
+
+    foreach ($line in Get-Content $tempEnvFile) {
+      if ($line -match '^(.*?)=(.*)$') {
+        [Environment]::SetEnvironmentVariable($matches[1], $matches[2], 'Process')
+      }
+    }
+  } finally {
+    Remove-Item -LiteralPath $tempEnvFile -Force -ErrorAction SilentlyContinue
   }
 }
 
