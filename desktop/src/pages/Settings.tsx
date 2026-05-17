@@ -30,6 +30,7 @@ import { TerminalSettings } from './TerminalSettings'
 import { DiagnosticsSettings } from './DiagnosticsSettings'
 import { ActivitySettings } from './ActivitySettings'
 import { MemorySettings } from './MemorySettings'
+import { ExtensionStore } from './ExtensionStore'
 import { useUIStore, type SettingsTab } from '../stores/uiStore'
 import { ClaudeOfficialLogin } from '../components/settings/ClaudeOfficialLogin'
 import { useUpdateStore } from '../stores/updateStore'
@@ -97,6 +98,7 @@ export function Settings() {
             <TabButton icon="extension" label={t('settings.tab.plugins')} active={activeTab === 'plugins'} onClick={() => setActiveTab('plugins')} />
             <TabButton icon="mouse" label={t('settings.tab.computerUse')} active={activeTab === 'computerUse'} onClick={() => setActiveTab('computerUse')} />
             <TabButton icon="monitoring" label={t('settings.tab.activity')} active={activeTab === 'activity'} onClick={() => setActiveTab('activity')} />
+            <TabButton icon="store" label={t('settings.tab.extensions') || 'Extensions'} active={activeTab === 'extensions'} onClick={() => setActiveTab('extensions')} />
             <TabButton icon="monitor_heart" label={t('settings.tab.diagnostics')} active={activeTab === 'diagnostics'} onClick={() => setActiveTab('diagnostics')} />
           </div>
           <div className="border-t border-[var(--color-border)]/40 pt-1">
@@ -119,6 +121,7 @@ export function Settings() {
           {activeTab === 'memory' && <MemorySettings />}
           {activeTab === 'plugins' && <PluginSettings />}
           {activeTab === 'computerUse' && <ComputerUseSettings />}
+          {activeTab === 'extensions' && <ExtensionStore />}
           {activeTab === 'diagnostics' && <DiagnosticsSettings />}
           {activeTab === 'about' && <AboutSettings />}
         </div>
