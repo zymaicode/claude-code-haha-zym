@@ -1094,7 +1094,7 @@ export class ConversationService {
           ...baseArgs,
         ]
       }
-      return [path.resolve(import.meta.dir, '../../../bin/claude-haha'), ...baseArgs]
+      return [path.resolve(import.meta.dir, '../../../bin/claude-haha-zym'), ...baseArgs]
     }
 
     return buildClaudeCliArgs(launcher, baseArgs, process.env.CLAUDE_APP_ROOT)

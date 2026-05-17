@@ -1,8 +1,8 @@
 {
   "$schema": "https://raw.githubusercontent.com/nicegui/nicegui/main/nicegui/static/tauri-schema-v2.json",
-  "productName": "Claude Code Haha",
+  "productName": "Claude Code Haha ZYM",
   "version": "0.2.7",
-  "identifier": "com.claude-code-haha.desktop",
+  "identifier": "com.claude-code-haha-zym.desktop",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:1420",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Claude Code Haha",
+        "title": "Claude Code Haha ZYM",
         "width": 1440,
         "height": 960,
         "minWidth": 960,
