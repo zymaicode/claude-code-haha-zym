@@ -476,6 +476,14 @@ function getModelContextWindowErrorKey(value: string): 'number' | 'range' | null
   return getAutoCompactWindowErrorKey(value)
 }
 
+const KNOWN_1M_MODELS = new Set([
+  'deepseek-v4-pro', 'deepseek-v4-flash', 'deepseek-chat', 'deepseek-reasoner',
+  'claude-opus-4-7', 'claude-sonnet-4-6',
+  'gpt-4.1', 'gpt-4.1-mini', 'gpt-4.1-nano',
+  'gemini-2.5-pro', 'gemini-2.5-flash', 'gemini-3-pro', 'gemini-3-flash',
+  'qwen3.5-plus', 'qwen3.5-flash',
+])
+
 function getModelContextInputValue(
   model: string | undefined,
   preset: ProviderPreset,
@@ -484,7 +492,10 @@ function getModelContextInputValue(
   const trimmedModel = model?.trim()
   if (!trimmedModel) return ''
   const value = provider?.modelContextWindows?.[trimmedModel] ?? preset.modelContextWindows?.[trimmedModel]
-  return value !== undefined ? String(value) : ''
+  if (value !== undefined) return String(value)
+  // Auto-fill 1M for known large-context models not in preset
+  if (KNOWN_1M_MODELS.has(trimmedModel.toLowerCase())) return '1000000'
+  return ''
 }
 
 function getModelContextInputs(
