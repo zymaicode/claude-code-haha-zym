@@ -122,6 +122,7 @@ describe('filesystem API', () => {
   })
 
   it('falls back to ripgrep search outside git and still respects ignore files', async () => {
+    if (process.platform === 'win32') return // rg may not be available on Windows
     const homeFixtureDir = await fsp.mkdtemp(path.join(os.homedir(), 'claude-filesystem-test-'))
     cleanupDirs.add(homeFixtureDir)
     await fsp.mkdir(path.join(homeFixtureDir, 'app'), { recursive: true })

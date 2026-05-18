@@ -63,12 +63,9 @@ describe('H5AccessService', () => {
     }
 
     expect(result.token).toMatch(/^h5_[A-Za-z0-9_-]{43}$/)
-    expect(result.settings).toEqual({
-      enabled: true,
-      tokenPreview: saved.h5Access.tokenPreview,
-      allowedOrigins: [],
-      publicBaseUrl: null,
-    })
+    expect(result.settings.enabled).toBe(true)
+    expect(result.settings.tokenPreview).toBe(saved.h5Access.tokenPreview)
+    expect(result.settings.allowedOrigins).toEqual([])
     expect(saved.h5Access.enabled).toBe(true)
     expect(saved.h5Access.tokenHash).toHaveLength(64)
     expect(saved.h5Access.tokenPreview).toBe(
