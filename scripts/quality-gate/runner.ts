@@ -152,7 +152,7 @@ async function runCommandLane(lane: LaneDefinition, options: QualityGateOptions)
   const streamLogs = process.env.QUALITY_GATE_STREAM_LOGS === '1'
   const writeStdout = streamLogs ? (chunk: Buffer) => process.stdout.write(chunk) : () => {}
   const writeStderr = streamLogs ? (chunk: Buffer) => process.stderr.write(chunk) : () => {}
-  const proc = Bun.spawn(command, {
+  const proc = Bun.spawn([process.execPath, ...command.slice(1)], {
     cwd: options.rootDir,
     stdout: 'pipe',
     stderr: 'pipe',

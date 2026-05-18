@@ -1,5 +1,10 @@
+import { resolve, dirname } from 'node:path'
 import { baselineCases } from './baseline/cases'
 import type { BaselineTarget, LaneDefinition, QualityGateMode } from './types'
+
+const repoRoot = resolve(dirname(import.meta.dir), '..', '..')
+// Use process.execPath for bun so commands work on Windows with spaces in paths
+const bunExe = process.execPath
 
 export function lanesForMode(mode: QualityGateMode, baselineTargets: BaselineTarget[] = []): LaneDefinition[] {
   const lanes: LaneDefinition[] = [
@@ -8,7 +13,7 @@ export function lanesForMode(mode: QualityGateMode, baselineTargets: BaselineTar
       title: 'Impact report',
       description: 'Summarize changed areas, required local checks, and risk notes.',
       kind: 'command',
-      command: ['bun', 'run', 'check:impact'],
+      command: [bunExe, 'run', resolve(repoRoot, 'scripts/pr/impact-report.ts')],
       requiredForModes: ['pr', 'baseline', 'release'],
       category: 'scope',
     },
@@ -17,7 +22,7 @@ export function lanesForMode(mode: QualityGateMode, baselineTargets: BaselineTar
       title: 'Policy checks',
       description: 'Run policy, workflow, hook, quarantine, and gate unit tests when any PR quality policy applies.',
       kind: 'command',
-      command: ['bun', 'run', 'check:policy'],
+      command: [bunExe, 'run', 'check:policy'],
       impactRequiredCheck: 'bun run check:policy',
       requiredForModes: ['pr', 'release'],
       category: 'governance',
@@ -27,7 +32,7 @@ export function lanesForMode(mode: QualityGateMode, baselineTargets: BaselineTar
       title: 'Desktop checks',
       description: 'Run desktop lint, Vitest, and production build when desktop paths changed.',
       kind: 'command',
-      command: ['bun', 'run', 'check:desktop'],
+      command: [bunExe, 'run', 'check:desktop'],
       impactRequiredCheck: 'bun run check:desktop',
       requiredForModes: ['pr'],
       category: 'unit',
@@ -37,7 +42,7 @@ export function lanesForMode(mode: QualityGateMode, baselineTargets: BaselineTar
       title: 'Server checks',
       description: 'Run server, provider, runtime, MCP, OAuth, WebSocket, and API tests when server paths changed.',
       kind: 'command',
-      command: ['bun', 'run', 'check:server'],
+      command: [bunExe, 'run', 'check:server'],
       impactRequiredCheck: 'bun run check:server',
       requiredForModes: ['pr'],
       category: 'unit',
@@ -47,7 +52,7 @@ export function lanesForMode(mode: QualityGateMode, baselineTargets: BaselineTar
       title: 'Adapter checks',
       description: 'Run adapter tests when IM adapter paths changed.',
       kind: 'command',
-      command: ['bun', 'run', 'check:adapters'],
+      command: [bunExe, 'run', 'check:adapters'],
       impactRequiredCheck: 'bun run check:adapters',
       requiredForModes: ['pr'],
       category: 'unit',
@@ -57,7 +62,7 @@ export function lanesForMode(mode: QualityGateMode, baselineTargets: BaselineTar
       title: 'Native desktop checks',
       description: 'Build sidecars and run the Tauri native compile check when native or packaging paths changed.',
       kind: 'command',
-      command: ['bun', 'run', 'check:native'],
+      command: [bunExe, 'run', 'check:native'],
       impactRequiredCheck: 'bun run check:native',
       requiredForModes: ['pr', 'release'],
       category: 'native',
@@ -67,7 +72,7 @@ export function lanesForMode(mode: QualityGateMode, baselineTargets: BaselineTar
       title: 'Docs checks',
       description: 'Run docs install and VitePress build when docs paths changed.',
       kind: 'command',
-      command: ['bun', 'run', 'check:docs'],
+      command: [bunExe, 'run', 'check:docs'],
       impactRequiredCheck: 'bun run check:docs',
       requiredForModes: ['pr'],
       category: 'docs',
@@ -77,7 +82,7 @@ export function lanesForMode(mode: QualityGateMode, baselineTargets: BaselineTar
       title: 'Persistence upgrade checks',
       description: 'Validate local JSON and desktop localStorage migrations against old-version fixtures.',
       kind: 'command',
-      command: ['bun', 'run', 'check:persistence-upgrade'],
+      command: [bunExe, 'run', resolve(repoRoot, 'scripts/quality-gate/persistence-upgrade.ts')],
       requiredForModes: ['pr', 'release'],
       category: 'governance',
     },
@@ -86,7 +91,7 @@ export function lanesForMode(mode: QualityGateMode, baselineTargets: BaselineTar
       title: 'Quarantine governance',
       description: 'Validate quarantined tests still have owners, exit criteria, and active review windows.',
       kind: 'command',
-      command: ['bun', 'run', 'check:quarantine'],
+      command: [bunExe, 'run', resolve(repoRoot, 'scripts/quality-gate/quarantine.ts'), '--enforce-review-date'],
       requiredForModes: ['pr', 'baseline', 'release'],
       category: 'governance',
     },
@@ -95,7 +100,7 @@ export function lanesForMode(mode: QualityGateMode, baselineTargets: BaselineTar
       title: 'Coverage gate',
       description: 'Run unit/component coverage suites and enforce the ratcheted coverage baseline.',
       kind: 'command',
-      command: ['bun', 'run', 'check:coverage'],
+      command: [bunExe, 'run', resolve(repoRoot, 'scripts/quality-gate/coverage.ts')],
       requiredForModes: ['pr', 'baseline', 'release'],
       category: 'coverage',
     },
@@ -104,7 +109,7 @@ export function lanesForMode(mode: QualityGateMode, baselineTargets: BaselineTar
       title: 'Baseline case catalog validation',
       description: 'Validate real Coding Agent baseline case definitions and fixture metadata.',
       kind: 'command',
-      command: ['bun', 'test', 'scripts/quality-gate/baseline/cases.test.ts'],
+      command: [bunExe, 'test', 'scripts/quality-gate/baseline/cases.test.ts'],
       requiredForModes: ['baseline', 'release'],
       category: 'unit',
     },
