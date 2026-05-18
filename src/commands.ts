@@ -147,6 +147,7 @@ import perfIssue from './commands/perf-issue/index.js'
 import sandboxToggle from './commands/sandbox-toggle/index.js'
 import chrome from './commands/chrome/index.js'
 import stickers from './commands/stickers/index.js'
+import optimize from './commands/optimize.js'
 import advisor from './commands/advisor.js'
 import { logError } from './utils/log.js'
 import { toError } from './utils/errors.js'
@@ -226,6 +227,7 @@ export const INTERNAL_ONLY_COMMANDS = [
   bughunter,
   commit,
   commitPushPr,
+  optimize,
   ctx_viz,
   goodClaude,
   issue,
