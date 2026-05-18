@@ -23,7 +23,7 @@ export function lanesForMode(mode: QualityGateMode, baselineTargets: BaselineTar
       title: 'Policy checks',
       description: 'Run policy, workflow, hook, quarantine, and gate unit tests when any PR quality policy applies.',
       kind: 'command',
-      command: [bunExe, 'run', 'check:policy'],
+      command: [bunExe, 'test', 'scripts/pr/change-policy.test.ts', 'scripts/pr/changed-files.test.ts', 'scripts/pr/pr-triage-workflow.test.ts', 'scripts/pr/pr-quality-workflow.test.ts', 'scripts/pr/release-workflow.test.ts', 'scripts/pr/quality-contract.test.ts', 'scripts/git-hooks/install.test.ts', 'scripts/quality-gate/quarantine.test.ts', 'scripts/quality-gate/coverage.test.ts', 'scripts/quality-gate/provider-smoke/execute.test.ts', 'scripts/quality-gate/desktop-smoke/execute.test.ts', 'scripts/quality-gate/providerTargets.test.ts', 'scripts/quality-gate/runner.test.ts'],
       impactRequiredCheck: 'bun run check:policy',
       requiredForModes: ['pr', 'release'],
       category: 'governance',

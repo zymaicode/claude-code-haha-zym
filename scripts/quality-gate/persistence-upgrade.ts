@@ -6,29 +6,28 @@ type Check = {
   cwd?: string
 }
 
-const rootDir = process.cwd()
+import { join } from 'node:path'
+
+const rootDir = join(import.meta.dir, '..', '..')
 const checks: Check[] = [
   {
     title: 'Server persistent JSON migrations',
-    command: ['bun', 'test', 'src/server/__tests__/persistence-upgrade.test.ts'],
+    command: [process.execPath, 'test', 'src/server/__tests__/persistence-upgrade.test.ts'],
   },
   {
     title: 'Desktop localStorage migrations',
-    command: ['bun', 'run', 'test', '--', 'src/lib/persistenceMigrations.test.ts'],
+    command: [process.execPath, 'run', 'test', '--', 'src/lib/persistenceMigrations.test.ts'],
     cwd: 'desktop',
   },
 ]
 
 async function runCheck(check: Check): Promise<number> {
-  const cwd = check.cwd ? `${rootDir}/${check.cwd}` : rootDir
+  const cwd = check.cwd ? join(rootDir, check.cwd) : rootDir
   console.log(`\n[persistence-upgrade] ${check.title}`)
-  const cmd = check.command[0] === 'bun'
-    ? [process.execPath, ...check.command.slice(1)]
-    : check.command
-  const cmdStr = cmd.map((a) => /[ "']/.test(a) ? `"${a}"` : a).join(' ')
-  console.log(`$ ${cmdStr}`)
+  console.log(`$ ${check.command.join(' ')}`)
   try {
     const { execSync } = await import('node:child_process')
+    const cmdStr = check.command.map((a) => /[ "']/.test(a) ? `"${a}"` : a).join(' ')
     execSync(cmdStr, { cwd, stdio: 'inherit', maxBuffer: 50 * 1024 * 1024 })
     return 0
   } catch (err: any) {
