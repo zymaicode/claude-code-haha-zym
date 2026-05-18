@@ -188,7 +188,9 @@
     "promoText": "LM Studio 使用 Anthropic 兼容协议，Base URL 填 http://localhost:1234，不要追加 /v1。Claude Code 的提示词、工具和 Skill 会占用较多上下文，请在本地模型设置里把 Context Window 调大，建议至少 200K。",
     "authStrategy": "auth_token_empty_api_key",
     "defaultEnv": {
-      "ANTHROPIC_AUTH_TOKEN": "lmstudio"
+      "ANTHROPIC_AUTH_TOKEN": "lmstudio",
+      "CC_HAHA_SEND_DISABLED_THINKING": "1",
+      "API_TIMEOUT_MS": "3000000"
     }
   },
   {
@@ -204,10 +206,50 @@
     },
     "needsApiKey": false,
     "websiteUrl": "https://docs.ollama.com/integrations/claude-code",
-    "promoText": "Ollama 使用 Anthropic 兼容协议，Base URL 填 http://localhost:11434，不要追加 /v1。Claude Code 的提示词、工具和 Skill 会占用较多上下文，请在本地模型设置里把 Context Window 调大，建议至少 200K。",
+    "promoText": "Ollama 使用 Anthropic 兼容协议，Base URL 填 http://localhost:11434，不要追加 /v1。Claude Code 的提示词、工具和 Skill 会占用较多上下文，建议 num_ctx 设 32768 以上。",
     "authStrategy": "auth_token_empty_api_key",
     "defaultEnv": {
-      "ANTHROPIC_AUTH_TOKEN": "ollama"
+      "ANTHROPIC_AUTH_TOKEN": "ollama",
+      "CC_HAHA_SEND_DISABLED_THINKING": "1",
+      "API_TIMEOUT_MS": "3000000"
+    }
+  },
+  {
+    "id": "llamacpp",
+    "name": "llama.cpp Server",
+    "baseUrl": "http://localhost:8080",
+    "apiFormat": "openai_chat",
+    "defaultModels": {
+      "main": "local-model",
+      "haiku": "local-model",
+      "sonnet": "local-model",
+      "opus": "local-model"
+    },
+    "needsApiKey": false,
+    "websiteUrl": "https://github.com/ggerganov/llama.cpp",
+    "promoText": "llama.cpp server 默认为 OpenAI 兼容协议。请将 API Format 选为 OpenAI Chat。建议在启动时添加 --ctx-size 32768 以上以支持工具调用。",
+    "authStrategy": "auth_token_empty_api_key",
+    "defaultEnv": {
+      "API_TIMEOUT_MS": "3000000"
+    }
+  },
+  {
+    "id": "vllm",
+    "name": "vLLM",
+    "baseUrl": "http://localhost:8000",
+    "apiFormat": "openai_chat",
+    "defaultModels": {
+      "main": "local-model",
+      "haiku": "local-model",
+      "sonnet": "local-model",
+      "opus": "local-model"
+    },
+    "needsApiKey": false,
+    "websiteUrl": "https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html",
+    "promoText": "vLLM 使用 OpenAI 兼容协议。请将 API Format 选为 OpenAI Chat。建议 --max-model-len 32768 以上以支持多轮工具调用。",
+    "authStrategy": "auth_token_empty_api_key",
+    "defaultEnv": {
+      "API_TIMEOUT_MS": "3000000"
     }
   },
   {
