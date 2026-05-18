@@ -101,7 +101,7 @@ type ChangedLineCoverage = {
   failures: string[]
 }
 
-const ROOT_DIR = process.cwd()
+const ROOT_DIR = join(import.meta.dir, '..', '..')
 const DEFAULT_THRESHOLDS_PATH = join(ROOT_DIR, 'scripts', 'quality-gate', 'coverage-thresholds.json')
 
 const ROOT_COVERAGE_SCOPES: CoverageScope[] = [

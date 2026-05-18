@@ -22,13 +22,18 @@ const checks: Check[] = [
 async function runCheck(check: Check): Promise<number> {
   const cwd = check.cwd ? `${rootDir}/${check.cwd}` : rootDir
   console.log(`\n[persistence-upgrade] ${check.title}`)
-  console.log(`$ ${check.command.join(' ')}`)
-  const proc = Bun.spawn(check.command, {
-    cwd,
-    stdout: 'inherit',
-    stderr: 'inherit',
-  })
-  return proc.exited
+  const cmd = check.command[0] === 'bun'
+    ? [process.execPath, ...check.command.slice(1)]
+    : check.command
+  const cmdStr = cmd.map((a) => /[ "']/.test(a) ? `"${a}"` : a).join(' ')
+  console.log(`$ ${cmdStr}`)
+  try {
+    const { execSync } = await import('node:child_process')
+    execSync(cmdStr, { cwd, stdio: 'inherit', maxBuffer: 50 * 1024 * 1024 })
+    return 0
+  } catch (err: any) {
+    return err.status ?? 1
+  }
 }
 
 let failures = 0
