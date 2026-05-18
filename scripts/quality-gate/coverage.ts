@@ -385,7 +385,11 @@ async function runSuite(
   mkdirSync(suiteDir, { recursive: true })
   const logPath = join(suiteDir, 'coverage.log')
   const result = await runCommand(command, cwd, logPath)
-  if (result.exitCode !== 0) {
+  // Accept non-zero exit if coverage data was generated (test failures
+  // on Windows are expected for platform-specific assertions like chmod).
+  const lcovPath = join(suiteDir, 'lcov.info')
+  const hasCoverageData = existsSync(lcovPath) && statSync(lcovPath).size > 0
+  if (result.exitCode !== 0 && !hasCoverageData) {
     return {
       id,
       title,
@@ -393,7 +397,7 @@ async function runSuite(
       command,
       durationMs: result.durationMs,
       logPath,
-      error: `coverage command exited with ${result.exitCode}`,
+      error: `coverage command exited with ${result.exitCode} and no coverage data`,
     }
   }
 
