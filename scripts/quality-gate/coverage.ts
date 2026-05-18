@@ -362,18 +362,13 @@ function parseVitestSummary(path: string): CoverageSummary {
 
 async function runCommand(command: string[], cwd: string, logPath: string) {
   const started = Date.now()
-  // Replace 'bun' with process.execPath for Windows compat
   const cmd = command[0] === 'bun' ? [process.execPath, ...command.slice(1)] : command
-  const cmdStr = cmd.map((a) => /[ "']/.test(a) ? `"${a}"` : a).join(' ')
-  const { execSync } = await import('node:child_process')
-  let stdout = '', stderr = '', exitCode = 0
-  try {
-    stdout = execSync(cmdStr, { cwd, encoding: 'utf-8', maxBuffer: 100 * 1024 * 1024 })
-  } catch (err: any) {
-    exitCode = err.status ?? 1
-    stderr = err.stderr || err.message || ''
-    stdout = err.stdout || ''
-  }
+  const proc = Bun.spawn(cmd, { cwd, stdout: 'pipe', stderr: 'pipe' })
+  const [stdout, stderr, exitCode] = await Promise.all([
+    new Response(proc.stdout).text(),
+    new Response(proc.stderr).text(),
+    proc.exited,
+  ])
   mkdirSync(dirname(logPath), { recursive: true })
   writeFileSync(logPath, `$ ${command.join(' ')}\n${stdout}${stderr}`)
   return { exitCode, durationMs: Date.now() - started }
