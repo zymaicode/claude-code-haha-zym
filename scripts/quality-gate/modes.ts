@@ -1,8 +1,9 @@
-import { resolve, dirname } from 'node:path'
+import { join } from 'node:path'
 import { baselineCases } from './baseline/cases'
 import type { BaselineTarget, LaneDefinition, QualityGateMode } from './types'
 
-const repoRoot = resolve(dirname(import.meta.dir), '..', '..')
+const rootDir = join(import.meta.dir, '..', '..')
+
 // Use process.execPath for bun so commands work on Windows with spaces in paths
 const bunExe = process.execPath
 
@@ -13,7 +14,7 @@ export function lanesForMode(mode: QualityGateMode, baselineTargets: BaselineTar
       title: 'Impact report',
       description: 'Summarize changed areas, required local checks, and risk notes.',
       kind: 'command',
-      command: [bunExe, 'run', resolve(repoRoot, 'scripts/pr/impact-report.ts')],
+      command: [bunExe, join(rootDir, 'scripts/pr/impact-report.ts')],
       requiredForModes: ['pr', 'baseline', 'release'],
       category: 'scope',
     },
@@ -82,7 +83,7 @@ export function lanesForMode(mode: QualityGateMode, baselineTargets: BaselineTar
       title: 'Persistence upgrade checks',
       description: 'Validate local JSON and desktop localStorage migrations against old-version fixtures.',
       kind: 'command',
-      command: [bunExe, 'run', resolve(repoRoot, 'scripts/quality-gate/persistence-upgrade.ts')],
+      command: [bunExe, join(rootDir, 'scripts/quality-gate/persistence-upgrade.ts')],
       requiredForModes: ['pr', 'release'],
       category: 'governance',
     },
@@ -91,7 +92,7 @@ export function lanesForMode(mode: QualityGateMode, baselineTargets: BaselineTar
       title: 'Quarantine governance',
       description: 'Validate quarantined tests still have owners, exit criteria, and active review windows.',
       kind: 'command',
-      command: [bunExe, 'run', resolve(repoRoot, 'scripts/quality-gate/quarantine.ts'), '--enforce-review-date'],
+      command: [bunExe, join(rootDir, 'scripts/quality-gate/quarantine.ts'), '--enforce-review-date'],
       requiredForModes: ['pr', 'baseline', 'release'],
       category: 'governance',
     },
@@ -100,7 +101,7 @@ export function lanesForMode(mode: QualityGateMode, baselineTargets: BaselineTar
       title: 'Coverage gate',
       description: 'Run unit/component coverage suites and enforce the ratcheted coverage baseline.',
       kind: 'command',
-      command: [bunExe, 'run', resolve(repoRoot, 'scripts/quality-gate/coverage.ts')],
+      command: [bunExe, join(rootDir, 'scripts/quality-gate/coverage.ts')],
       requiredForModes: ['pr', 'baseline', 'release'],
       category: 'coverage',
     },

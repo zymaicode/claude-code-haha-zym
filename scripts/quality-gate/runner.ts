@@ -152,16 +152,27 @@ async function runCommandLane(lane: LaneDefinition, options: QualityGateOptions)
   const streamLogs = process.env.QUALITY_GATE_STREAM_LOGS === '1'
   const writeStdout = streamLogs ? (chunk: Buffer) => process.stdout.write(chunk) : () => {}
   const writeStderr = streamLogs ? (chunk: Buffer) => process.stderr.write(chunk) : () => {}
-  const proc = Bun.spawn([process.execPath, ...command.slice(1)], {
-    cwd: options.rootDir,
-    stdout: 'pipe',
-    stderr: 'pipe',
-  })
-  const [exitCode] = await Promise.all([
-    proc.exited,
-    pipeToLog(proc.stdout, logPath, writeStdout),
-    pipeToLog(proc.stderr, logPath, writeStderr),
-  ])
+  const isBunCmd = command[0] === 'bun' || command[0] === process.execPath
+  const queueCmd = isBunCmd ? [process.execPath, ...command.slice(1)] : command
+
+  let exitCode = 0
+  try {
+    const { execSync } = await import('node:child_process')
+    const cmdStr = queueCmd.map((a) => /[ "']/.test(a) ? `"${a}"` : a).join(' ')
+    const stdout = execSync(cmdStr, {
+      cwd: options.rootDir,
+      encoding: 'utf-8',
+      maxBuffer: 50 * 1024 * 1024,
+      timeout: 300_000,
+    })
+    appendFileSync(logPath, stdout)
+    if (streamLogs) writeStdout(Buffer.from(stdout))
+  } catch (err: any) {
+    exitCode = err.status ?? 1
+    const output = err.stdout || err.stderr || err.message || String(err)
+    appendFileSync(logPath, output)
+    if (streamLogs) writeStderr(Buffer.from(output))
+  }
 
   return {
     id: lane.id,
