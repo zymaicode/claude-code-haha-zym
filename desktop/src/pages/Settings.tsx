@@ -1151,12 +1151,28 @@ function ProviderFormModal({ open, onClose, mode, provider, presets }: ProviderF
                           : 'settings.providers.opusContextWindow'
                     return (
                       <div key={slot}>
-                        <Input
-                          label={t(labelKey)}
-                          value={modelContextInputs[slot]}
-                          onChange={(e) => handleModelContextWindowChange(slot, e.target.value)}
-                          placeholder={t('settings.providers.contextWindowPlaceholder')}
-                        />
+                        <div className="flex items-end gap-1.5">
+                          <div className="flex-1 min-w-0">
+                            <Input
+                              label={t(labelKey)}
+                              value={modelContextInputs[slot]}
+                              onChange={(e) => handleModelContextWindowChange(slot, e.target.value)}
+                              placeholder={t('settings.providers.contextWindowPlaceholder')}
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleModelContextWindowChange(slot, '1000000')}
+                            className="mb-1 shrink-0 rounded px-2 py-1.5 text-[11px] font-medium border transition-colors"
+                            style={{
+                              borderColor: modelContextInputs[slot] === '1000000' ? 'var(--color-brand)' : 'var(--color-border)',
+                              color: modelContextInputs[slot] === '1000000' ? 'var(--color-brand)' : 'var(--color-text-tertiary)',
+                              background: modelContextInputs[slot] === '1000000' ? 'var(--color-brand-subtle)' : 'transparent',
+                            }}
+                          >
+                            1M
+                          </button>
+                        </div>
                         {errorKey && (
                           <p className="text-[11px] text-[var(--color-error)] mt-1">
                             {errorKey === 'number'
